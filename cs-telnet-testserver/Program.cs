@@ -12,7 +12,7 @@ namespace TelnetTest
 			return true;
 		}
 		
-		static void ClientConnectEvent (Guid cg)
+		static void ClientConnectEvent (Guid cg, System.Net.Sockets.TcpClient tcpClient)
 		{
 			Console.WriteLine("Client {0} connected", cg);
 		}
@@ -27,7 +27,7 @@ namespace TelnetTest
 			var ts = new Telnet.TelnetServer();
 			ts.ClientAuth = ClientAuth;
 			ts.onClientConnect += ClientConnectEvent;
-			ts.onClientTextRec += ClientTextReceived;
+			ts.onClientRecStrLine += ClientTextReceived;
 			ts.Start("127.0.0.1");
 			
 			Console.WriteLine("Telnet server started.");

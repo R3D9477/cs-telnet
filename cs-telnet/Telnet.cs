@@ -3,6 +3,8 @@ using System.Text;
 using System.Threading;
 using System.Net.Sockets;
 
+// Original library: https://www.codeproject.com/Articles/19071/Quick-tool-A-minimalistic-Telnet-library
+
 namespace Telnet
 {
 	public abstract class Telnet
@@ -60,6 +62,7 @@ namespace Telnet
 		
 		void ParseTelnet (NetworkStream stream, StringBuilder sb, bool readline)
 		{
+			
 			do
 			{
 				while (stream.DataAvailable)
