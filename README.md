@@ -1,2 +1,3 @@
 # cs-telnet
-C# Telnet Client Server
+
+A simple telnet library (client & server) for C#.

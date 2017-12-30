@@ -1,0 +1,8 @@
+E:\Dropbox\Projects\DMT\cs-telnet\cs-telnet-testserver\obj\Debug\cs-telnet-testserver.csprojResolveAssemblyReference.cache
+E:\Dropbox\Projects\DMT\cs-telnet\cs-telnet-testserver\bin\Debug\cs-telnet-testserver.exe.config
+E:\Dropbox\Projects\DMT\cs-telnet\cs-telnet-testserver\bin\Debug\cs-telnet-testserver.exe
+E:\Dropbox\Projects\DMT\cs-telnet\cs-telnet-testserver\bin\Debug\cs-telnet-testserver.pdb
+E:\Dropbox\Projects\DMT\cs-telnet\cs-telnet-testserver\obj\Debug\cs-telnet-testserver.exe
+E:\Dropbox\Projects\DMT\cs-telnet\cs-telnet-testserver\obj\Debug\cs-telnet-testserver.pdb
+E:\Dropbox\Projects\DMT\cs-telnet\cs-telnet-testserver\bin\Debug\cs-telnet.dll
+E:\Dropbox\Projects\DMT\cs-telnet\cs-telnet-testserver\bin\Debug\cs-telnet.pdb
