@@ -1,5 +1,0 @@
-C:\PCApp\cs-telnet\cs-telnet\bin\Debug\cs-telnet.dll
-C:\PCApp\cs-telnet\cs-telnet\bin\Debug\cs-telnet.pdb
-C:\PCApp\cs-telnet\cs-telnet\obj\Debug\cs-telnet.csprojResolveAssemblyReference.cache
-C:\PCApp\cs-telnet\cs-telnet\obj\Debug\cs-telnet.dll
-C:\PCApp\cs-telnet\cs-telnet\obj\Debug\cs-telnet.pdb
