@@ -22,16 +22,29 @@ namespace Telnet
 		
 		//------------------------------------------------------------------------------------------
 		
+		public delegate bool LoginMethod (string login, string password);
+		public LoginMethod LoginProc;
+		
+		public delegate bool ConnCheckMethod ();
+		public ConnCheckMethod ConnectionCheckingProc;
+		
+		//------------------------------------------------------------------------------------------
+		
 		public TelnetClient ()
 		{
 			tcpSocket = null;
 			ConnectTimeoutMs = 200;
+			
+			LoginProc = DefaultLoginProc;
+			ConnectionCheckingProc = DefaultConnCkeck;
 		}
 		
 		//------------------------------------------------------------------------------------------
 		
-		public bool Connect (string host, int port = 23)
+		public bool Connect (string host, int port = 23, string login = null, string passw = null)
 		{
+			bool result = false;
+			
 			Disconnect();
 			
 			tcpSocket = new TcpClient();
@@ -42,11 +55,28 @@ namespace Telnet
 			try
 			{
 				tcpSocket.Connect(host, port);
+				result = tcpSocket.Connected;
 			}
-			catch
-			{
+			catch { result = false; }
+			
+			if (result)
+				try
+				{
+					if (!string.IsNullOrEmpty(login) && !string.IsNullOrEmpty(passw) && LoginProc != null)
+						result = DefaultLoginProc(login, passw);
+				}
+				catch { result = false; }
+			
+			if (result)
+				try
+				{
+					if (ConnectionCheckingProc != null)
+						result = ConnectionCheckingProc();
+				}
+				catch { result = false; }
+			
+			if (!result)
 				Disconnect();
-			}
 			
 			return IsConnected;
 		}
@@ -61,21 +91,34 @@ namespace Telnet
 		
 		//------------------------------------------------------------------------------------------
 		
-		public bool Login (string Username, string Password)
+		bool DefaultLoginProc (string login, string password)
         {
 			if (IsConnected)
 			{
 				ReadToEnd();
 				
-				if (WriteLine(tcpSocket.GetStream(), Username))
+				if (WriteLine(tcpSocket.GetStream(), login))
 				{
 					ReadToEnd();
-					return WriteLine(tcpSocket.GetStream(), Password);
+					return WriteLine(tcpSocket.GetStream(), password);
 				}
 			}
 			
 			return false;
         }
+		
+		bool DefaultConnCkeck ()
+		{
+			if (IsConnected)
+			{
+				string prompt = ReadToEnd().TrimEnd();
+				
+				if (prompt.Length > 0)
+					return prompt[prompt.Length - 1] == '$' || prompt[prompt.Length - 1] == '>';
+			}
+			
+			return false;
+		}
 		
 		//------------------------------------------------------------------------------------------
 		

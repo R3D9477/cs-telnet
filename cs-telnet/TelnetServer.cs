@@ -18,7 +18,7 @@ namespace Telnet
 		//------------------------------------------------------------------------------------------
 		
 		public delegate bool ClientAuthMethod (string login, string password);
-		public ClientAuthMethod ClientAuth;
+		public ClientAuthMethod ClientAuthProc;
 		
 		//------------------------------------------------------------------------------------------
 		
@@ -36,7 +36,7 @@ namespace Telnet
 			listenderThread = null;
 			clients = new Dictionary<Guid, ClientInfo>();
 			
-			ClientAuth = null;
+			ClientAuthProc = null;
 			onClientConnect += DefaultClientConnect;
 			onClientRecStrLine += DefaultClientTextRec;
 		}
@@ -62,7 +62,7 @@ namespace Telnet
 		
 		bool ClientAutorization (TcpClient tc)
 		{
-			if (ClientAuth == null)
+			if (ClientAuthProc == null)
 				return true;
 			
 			WriteLine(tc.GetStream(), "login:");
@@ -71,7 +71,7 @@ namespace Telnet
 			WriteLine(tc.GetStream(), "passw:");
 			var cPassw = ReadNoEmpty(tc.GetStream(), true).Trim();
 			
-			return ClientAuth(cLogin, cPassw);
+			return ClientAuthProc(cLogin, cPassw);
 		}
 		
 		void ListenderProc ()
@@ -152,6 +152,12 @@ namespace Telnet
 		}
 		
 		//------------------------------------------------------------------------------------------
+		
+		public void Send (Guid gc, string text, string telnetPostfix = "\n\n>")
+		{
+			if (clients.ContainsKey(gc))
+				Write(clients[gc].tpcClient.GetStream(), text + (string.IsNullOrEmpty(telnetPostfix) ? "" : telnetPostfix));
+		}
 		
 		public void SendLine (Guid gc, string strLine)
 		{
