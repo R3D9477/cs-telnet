@@ -10,7 +10,7 @@ namespace Telnet
 	public abstract class Telnet
 	{
 		protected Encoding Enc = ASCIIEncoding.ASCII;
-		protected int ReadTimeoutMs = 10;
+		protected TimeSpan ReadTimeout = TimeSpan.FromMilliseconds(10);
 		
 		//------------------------------------------------------------------------------------------
 		
@@ -62,7 +62,6 @@ namespace Telnet
 		
 		void ParseTelnet (NetworkStream stream, StringBuilder sb, bool readline)
 		{
-			
 			do
 			{
 				while (stream.DataAvailable)
@@ -112,7 +111,7 @@ namespace Telnet
 					}
 				}
 					
-				Thread.Sleep(ReadTimeoutMs);
+				Thread.Sleep(ReadTimeout);
 			}
 			while (stream.DataAvailable);
 		}

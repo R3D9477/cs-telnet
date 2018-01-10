@@ -25,6 +25,10 @@ namespace Telnet
 		public delegate void ClientConnectEvent (Guid cg, TcpClient tcpClient);
 		public event ClientConnectEvent onClientConnect;
 		
+		public delegate void ClientAuthEvent (TcpClient tcpClient);
+		public event ClientAuthEvent onClientAuthSucceed;
+		public event ClientAuthEvent onClientAuthFailed;
+		
 		public delegate void ClientTextReceived (Guid cg, string text);
 		public event ClientTextReceived onClientRecStrLine;
 		
@@ -38,12 +42,18 @@ namespace Telnet
 			
 			ClientAuthProc = null;
 			onClientConnect += DefaultClientConnect;
+			onClientAuthSucceed += DefaultClientAuthSucceed;
+			onClientAuthFailed += DefaultClientAuthFailed;
 			onClientRecStrLine += DefaultClientTextRec;
 		}
 		
 		//------------------------------------------------------------------------------------------
 		
 		void DefaultClientConnect (Guid cg, TcpClient tcpClient) { }
+		
+		void DefaultClientAuthSucceed (TcpClient tcpClient) { Send(tcpClient, "OK"); }
+		
+		void DefaultClientAuthFailed (TcpClient tcpClient) { }
 		
 		void DefaultClientTextRec (Guid cg, string text) { }
 		
@@ -62,16 +72,25 @@ namespace Telnet
 		
 		bool ClientAutorization (TcpClient tc)
 		{
-			if (ClientAuthProc == null)
-				return true;
+			bool result = true;
 			
-			WriteLine(tc.GetStream(), "login:");
-			var cLogin = ReadNoEmpty(tc.GetStream(), true).Trim();
+			if (ClientAuthProc != null)
+			{
+				WriteLine(tc.GetStream(), "login:");
+				var cLogin = ReadNoEmpty(tc.GetStream(), true).Trim();
+				
+				WriteLine(tc.GetStream(), "passw:");
+				var cPassw = ReadNoEmpty(tc.GetStream(), true).Trim();
+				
+				result = ClientAuthProc(cLogin, cPassw);
+			}
 			
-			WriteLine(tc.GetStream(), "passw:");
-			var cPassw = ReadNoEmpty(tc.GetStream(), true).Trim();
+			if (result)
+				onClientAuthSucceed(tc);
+			else
+				onClientAuthFailed(tc);
 			
-			return ClientAuthProc(cLogin, cPassw);
+			return result;
 		}
 		
 		void ListenderProc ()
@@ -156,7 +175,14 @@ namespace Telnet
 		public void Send (Guid gc, string text, string telnetPostfix = "\n\n>")
 		{
 			if (clients.ContainsKey(gc))
-				Write(clients[gc].tpcClient.GetStream(), text + (string.IsNullOrEmpty(telnetPostfix) ? "" : telnetPostfix));
+				Send(clients[gc].tpcClient, text, telnetPostfix);
+		}
+		
+		public void Send (TcpClient tc, string text, string telnetPostfix = "\n\n>")
+		{
+			if (tc != null)
+				if (tc.Connected)
+					Write(tc.GetStream(), text + (string.IsNullOrEmpty(telnetPostfix) ? "" : telnetPostfix));
 		}
 		
 		public void SendLine (Guid gc, string strLine)

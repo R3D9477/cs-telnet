@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Net.Sockets;
 
 namespace Telnet
@@ -18,7 +19,8 @@ namespace Telnet
 			}
 		}
 		
-		public int ConnectTimeoutMs;
+		public TimeSpan ConnectTimeout;
+		public TimeSpan DataTransferTimeout;
 		
 		//------------------------------------------------------------------------------------------
 		
@@ -33,7 +35,9 @@ namespace Telnet
 		public TelnetClient ()
 		{
 			tcpSocket = null;
-			ConnectTimeoutMs = 200;
+			
+			ConnectTimeout = TimeSpan.FromMilliseconds(500);
+			DataTransferTimeout = TimeSpan.FromMilliseconds(250);
 			
 			LoginProc = DefaultLoginProc;
 			ConnectionCheckingProc = DefaultConnCkeck;
@@ -49,23 +53,42 @@ namespace Telnet
 			
 			tcpSocket = new TcpClient();
 			
-			tcpSocket.SendTimeout = ConnectTimeoutMs;
-			tcpSocket.ReceiveTimeout = ConnectTimeoutMs;
+			tcpSocket.SendTimeout = (int)DataTransferTimeout.TotalMilliseconds;
+			tcpSocket.ReceiveTimeout = (int)DataTransferTimeout.TotalMilliseconds;
+			
+			IAsyncResult ar = tcpSocket.BeginConnect(host, port, null, null);  
+			WaitHandle wh = ar.AsyncWaitHandle;  
 			
 			try
-			{
-				tcpSocket.Connect(host, port);
-				result = tcpSocket.Connected;
+			{  
+				if (!ar.AsyncWaitHandle.WaitOne(ConnectTimeout, false))  
+				{  
+					tcpSocket.Close();  
+					throw new TimeoutException();
+				}  
+				
+				tcpSocket.EndConnect(ar);
+				result = true;
 			}
-			catch { result = false; }
-			
+			catch
+			{
+				result = false;
+			}
+			finally 
+			{  
+				wh.Close();
+			}
+				
 			if (result)
 				try
 				{
 					if (!string.IsNullOrEmpty(login) && !string.IsNullOrEmpty(passw) && LoginProc != null)
 						result = DefaultLoginProc(login, passw);
 				}
-				catch { result = false; }
+				catch
+				{
+					result = false;
+				}
 			
 			if (result)
 				try
@@ -73,7 +96,10 @@ namespace Telnet
 					if (ConnectionCheckingProc != null)
 						result = ConnectionCheckingProc();
 				}
-				catch { result = false; }
+				catch
+				{
+					result = false;
+				}
 			
 			if (!result)
 				Disconnect();
@@ -95,11 +121,16 @@ namespace Telnet
         {
 			if (IsConnected)
 			{
+				Thread.Sleep(50);
 				ReadToEnd();
 				
+				Thread.Sleep(50);
 				if (WriteLine(tcpSocket.GetStream(), login))
 				{
+					Thread.Sleep(50);
 					ReadToEnd();
+					
+					Thread.Sleep(50);
 					return WriteLine(tcpSocket.GetStream(), password);
 				}
 			}
@@ -111,10 +142,11 @@ namespace Telnet
 		{
 			if (IsConnected)
 			{
+				Thread.Sleep(100);
 				string prompt = ReadToEnd().TrimEnd();
 				
 				if (prompt.Length > 0)
-					return prompt[prompt.Length - 1] == '$' || prompt[prompt.Length - 1] == '>';
+					return prompt.Contains("$") || prompt.Contains(">");
 			}
 			
 			return false;
@@ -125,7 +157,14 @@ namespace Telnet
 		public bool SendLine (string strLine)
 		{
 			if (IsConnected)
-				try { return WriteLine(tcpSocket.GetStream(), strLine); } catch { Disconnect(); }
+				try
+				{
+					return WriteLine(tcpSocket.GetStream(), strLine);
+				}
+				catch
+				{
+					Disconnect();
+				}
 			
 			return false;
 		}
@@ -133,7 +172,14 @@ namespace Telnet
 		public string ReadToEnd ()
 		{
 			if (IsConnected)
-				try { return Read(tcpSocket.GetStream(), false); } catch { Disconnect();  }
+				try
+				{
+					return Read(tcpSocket.GetStream(), false);
+				}
+				catch
+				{
+					Disconnect();
+				}
 			
 			return "";
 		}
@@ -141,7 +187,14 @@ namespace Telnet
 		public string ReadLine ()
 		{
 			if (IsConnected)
-				try { return ReadNoEmpty(tcpSocket.GetStream(), true); } catch { Disconnect(); }
+				try
+				{
+					return ReadNoEmpty(tcpSocket.GetStream(), true);
+				}
+				catch
+				{
+					Disconnect();
+				}
 			
 			return "";
 		}
