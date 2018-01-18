@@ -24,6 +24,13 @@ namespace Telnet
 		
 		//------------------------------------------------------------------------------------------
 		
+		string host;
+		int port;
+		string login;
+		string passw;
+		
+		//------------------------------------------------------------------------------------------
+		
 		public delegate bool LoginMethod (string login, string password);
 		public LoginMethod LoginProc;
 		
@@ -34,6 +41,11 @@ namespace Telnet
 		
 		public TelnetClient ()
 		{
+			this.host = null;
+			this.port = 23;
+			this.login = null;
+			this.passw = null;
+			
 			tcpSocket = null;
 			
 			ConnectTimeout = TimeSpan.FromMilliseconds(500);
@@ -47,9 +59,24 @@ namespace Telnet
 		
 		public bool Connect (string host, int port = 23, string login = null, string passw = null)
 		{
+			this.host = host;
+			this.port = port;
+			this.login = login;
+			this.passw = passw;
+			
+			Reconnect();
+			
+			return IsConnected;
+		}
+		
+		public bool Reconnect ()
+		{
+			Disconnect();
+			
 			bool result = false;
 			
-			Disconnect();
+			if (string.IsNullOrEmpty(host) || port < 1)
+				return result;
 			
 			tcpSocket = new TcpClient();
 			
@@ -104,7 +131,7 @@ namespace Telnet
 			if (!result)
 				Disconnect();
 			
-			return IsConnected;
+			return result;
 		}
 		
 		public void Disconnect ()
