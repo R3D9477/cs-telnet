@@ -7,8 +7,6 @@ using System.Collections.Generic;
 
 namespace Telnet
 {
-	
-	
 	public class TelnetServer : Telnet
 	{
 		TcpListener tcpListener;

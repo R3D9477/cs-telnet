@@ -13,8 +13,8 @@ namespace Telnet
 			get
 			{
 				if (tcpSocket != null)
-					return tcpSocket.Connected;
-				
+					try { return tcpSocket.Connected; } catch { }
+
 				return false;
 			}
 		}
@@ -83,16 +83,16 @@ namespace Telnet
 			tcpSocket.SendTimeout = (int)DataTransferTimeout.TotalMilliseconds;
 			tcpSocket.ReceiveTimeout = (int)DataTransferTimeout.TotalMilliseconds;
 			
-			IAsyncResult ar = tcpSocket.BeginConnect(host, port, null, null);  
-			WaitHandle wh = ar.AsyncWaitHandle;  
+			IAsyncResult ar = tcpSocket.BeginConnect(host, port, null, null);
+			WaitHandle wh = ar.AsyncWaitHandle;
 			
 			try
-			{  
-				if (!ar.AsyncWaitHandle.WaitOne(ConnectTimeout, false))  
-				{  
-					tcpSocket.Close();  
+			{
+				if (!ar.AsyncWaitHandle.WaitOne(ConnectTimeout, false))
+				{
+					tcpSocket.Close();
 					throw new TimeoutException();
-				}  
+				}
 				
 				tcpSocket.EndConnect(ar);
 				result = true;
@@ -101,8 +101,8 @@ namespace Telnet
 			{
 				result = false;
 			}
-			finally 
-			{  
+			finally
+			{
 				wh.Close();
 			}
 				
@@ -145,7 +145,7 @@ namespace Telnet
 		//------------------------------------------------------------------------------------------
 		
 		bool DefaultLoginProc (string login, string password)
-        {
+		{
 			if (IsConnected)
 			{
 				Thread.Sleep(50);
@@ -163,7 +163,7 @@ namespace Telnet
 			}
 			
 			return false;
-        }
+		}
 		
 		bool DefaultConnCkeck ()
 		{

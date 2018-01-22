@@ -9,5 +9,5 @@ namespace Telnet
 		DO = 253,
 		DONT = 254,
 		IAC = 255
-    }
+	}
 }

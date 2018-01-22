@@ -25,7 +25,7 @@ namespace TelnetTest
 		public static void Main (string[] args)
 		{
 			var ts = new Telnet.TelnetServer();
-			ts.ClientAuth = ClientAuth;
+			ts.ClientAuthProc = ClientAuth;
 			ts.onClientConnect += ClientConnectEvent;
 			ts.onClientRecStrLine += ClientTextReceived;
 			ts.Start("127.0.0.1");
