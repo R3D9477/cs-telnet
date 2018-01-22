@@ -78,11 +78,11 @@ namespace Telnet
 							if (inputverb == -1) break;
 								switch (inputverb)
 								{
-									case (int)Verbs.IAC: 
+									case (int)Verbs.IAC:
 											//literal IAC = 255 escaped, so append char 255 to string
 											sb.Append(inputverb);
 										break;
-									case (int)Verbs.DO: 
+									case (int)Verbs.DO:
 									case (int)Verbs.DONT:
 									case (int)Verbs.WILL:
 									case (int)Verbs.WONT:
@@ -95,10 +95,11 @@ namespace Telnet
 											stream.WriteByte((byte)Verbs.IAC);
 											
 											if (inputoption == (int)Options.SGA )
-												stream.WriteByte(inputverb == (int)Verbs.DO ? (byte)Verbs.WILL:(byte)Verbs.DO); 
+												stream.WriteByte(inputverb == (int)Verbs.DO ? (byte)Verbs.WILL:(byte)Verbs.DO);
 											else
-												stream.WriteByte(inputverb == (int)Verbs.DO ? (byte)Verbs.WONT : (byte)Verbs.DONT); 
-												stream.WriteByte((byte)inputoption);
+												stream.WriteByte(inputverb == (int)Verbs.DO ? (byte)Verbs.WONT : (byte)Verbs.DONT);
+											
+											stream.WriteByte((byte)inputoption);
 										break;
 								}
 							break;
