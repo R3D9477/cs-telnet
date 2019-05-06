@@ -1,12 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-# SharpDevelop 5.1
-VisualStudioVersion = 12.0.20827.3
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.329
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs-telnet", "cs-telnet\cs-telnet.csproj", "{07100160-643A-4CC5-A9B0-10FCB4B4B121}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs-telnet-testserver", "cs-telnet-testserver\cs-telnet-testserver.csproj", "{C0EA740C-70DD-47CE-8DBF-B10862642C08}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cs-telnet-testclient", "cs-telnet-testclient\cs-telnet-testclient.csproj", "{F8D73E35-2680-4999-8395-36ADEE264B85}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,5 +23,15 @@ Global
 		{C0EA740C-70DD-47CE-8DBF-B10862642C08}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0EA740C-70DD-47CE-8DBF-B10862642C08}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0EA740C-70DD-47CE-8DBF-B10862642C08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8D73E35-2680-4999-8395-36ADEE264B85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8D73E35-2680-4999-8395-36ADEE264B85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8D73E35-2680-4999-8395-36ADEE264B85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8D73E35-2680-4999-8395-36ADEE264B85}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {56BD5C5E-EFA8-4A56-AF90-737390A5531E}
 	EndGlobalSection
 EndGlobal
